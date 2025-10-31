@@ -64,6 +64,9 @@ jobs:
             export DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME}"
             export DOCKERHUB_TOKEN="${DOCKERHUB_TOKEN}"
             cd ~/crud
+            sudo mkdir -p storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views
+            sudo chown -R www-data:www-data storage
+            sudo chmod -R 775 storage
             if [ ! -f docker/.env.production ]; then
               echo "Missing docker/.env.production on server" >&2
               exit 1
