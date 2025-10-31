@@ -9,6 +9,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      EC2_USER: ubuntu
 
     steps:
       - name: Checkout repository
@@ -47,16 +49,16 @@ jobs:
 
       - name: Copy deployment files
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key ${{ secrets.EC2_HOST }} "mkdir -p ~/crud/docker/nginx"
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key docker-compose.prod.yml ${{ secrets.EC2_HOST }}:~/crud/docker-compose.prod.yml
-          scp -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key docker/nginx/default.conf ${{ secrets.EC2_HOST }}:~/crud/docker/nginx/default.conf
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/crud/docker/nginx"
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key docker-compose.prod.yml ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crud/docker-compose.prod.yml
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key docker/nginx/default.conf ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crud/docker/nginx/default.conf
 
       - name: Deploy on EC2
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key ${{ secrets.EC2_HOST }} <<EOF
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }} <<EOF
             set -e
             export DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME}"
             export DOCKERHUB_TOKEN="${DOCKERHUB_TOKEN}"
