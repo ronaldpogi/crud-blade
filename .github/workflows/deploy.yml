@@ -49,9 +49,10 @@ jobs:
 
       - name: Copy deployment files
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/crud/docker/nginx"
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }} "mkdir -p ~/crud/docker/nginx && rm -rf ~/crud/public"
           scp -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key docker-compose.prod.yml ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crud/docker-compose.prod.yml
           scp -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key docker/nginx/default.conf ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crud/docker/nginx/default.conf
+          scp -r -o StrictHostKeyChecking=no -i ~/.ssh/ec2.key public ${{ env.EC2_USER }}@${{ secrets.EC2_HOST }}:~/crud/
 
       - name: Deploy on EC2
         env:
