@@ -5,6 +5,8 @@ use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\PeopleController;
 use Illuminate\Support\Facades\Route;
 
+// deploy trigger
+
 Route::redirect('/', '/people');
 
 Route::resource('people', PeopleController::class);
