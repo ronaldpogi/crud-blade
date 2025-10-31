@@ -70,5 +70,19 @@ jobs:
             echo "\$DOCKERHUB_TOKEN" | docker login -u "\$DOCKERHUB_USERNAME" --password-stdin
             DOCKERHUB_USERNAME="\$DOCKERHUB_USERNAME" docker compose -f docker-compose.prod.yml pull
             DOCKERHUB_USERNAME="\$DOCKERHUB_USERNAME" docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            # Wait for MySQL to accept connections before running migrations
+            ready=0
+            for i in \$(seq 1 10); do
+              if DOCKERHUB_USERNAME="\$DOCKERHUB_USERNAME" docker compose -f docker-compose.prod.yml exec -T mysql sh -c 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent'; then
+                ready=1
+                break
+              fi
+              echo "MySQL not ready yet, retrying (\$i/10)..."
+              sleep 5
+            done
+            if [ "\$ready" -ne 1 ]; then
+              echo "MySQL did not become ready in time" >&2
+              exit 1
+            fi
             DOCKERHUB_USERNAME="\$DOCKERHUB_USERNAME" docker compose -f docker-compose.prod.yml exec -T app php artisan migrate --force
           EOF
