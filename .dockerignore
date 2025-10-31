@@ -1,0 +1,16 @@
+node_modules
+vendor
+storage/framework/cache/data
+storage/framework/views
+storage/logs
+.git
+.gitignore
+# .env
+# .env.*
+docker-compose.local.yml
+docker-compose.prod.yml
+tests
+*.log
+*.tmp
+.idea
+.vscode
